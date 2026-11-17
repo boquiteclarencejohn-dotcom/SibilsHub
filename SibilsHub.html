@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SibilsHub</title>
+<script>window.MathJax={tex:{inlineMath:[["$","$"],["\\(","\\)"]],displayMath:[["$$","$$"]]},startup:{typeset:false},svg:{fontCache:"global"}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-svg.js"></script>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#ffffff;--card:#f5f8ff;--tx:#0f1f3d;--mu:#5b6b8c;--bl:#1d4ed8;--ac:#f97316;--ac2:#fff;--bd:#d6e0f5;--ok:#1b8a4b;--no:#c92a2a}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0b1220;--card:#121b30;--tx:#eaf0ff;--mu:#9aa9c7;--bl:#60a5fa;--ac:#fb923c;--ac2:#0b1220;--bd:#243253;--ok:#4cc27f;--no:#ff7b7b}}
+:root[data-theme="dark"]{--bg:#0b1220;--card:#121b30;--tx:#eaf0ff;--mu:#9aa9c7;--bl:#60a5fa;--ac:#fb923c;--ac2:#0b1220;--bd:#243253;--ok:#4cc27f;--no:#ff7b7b}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;border-top:5px solid var(--bl);background:var(--bg);color:var(--tx);font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+header{padding:20px 16px 8px;max-width:760px;margin:auto}
+h1{margin:0;font-size:22px;color:var(--bl)}h1 span{color:var(--ac)}
+header p{margin:2px 0 0;color:var(--mu);font-size:14px}
+nav{display:flex;gap:6px;max-width:760px;margin:8px auto;padding:0 16px;overflow-x:auto}
+nav button{flex:1;white-space:nowrap}
+main{max-width:760px;margin:auto;padding:8px 16px 40px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:14px;margin:10px 0}
+button,.btn{font:inherit;border:1px solid var(--bd);background:var(--card);color:var(--tx);border-radius:10px;padding:10px 14px;cursor:pointer}
+button.p{background:var(--bl);color:var(--ac2);border-color:var(--bl);font-weight:600}
+nav button.on{background:var(--bl);color:var(--ac2);border-color:var(--bl)}
+input,select,textarea{font:inherit;width:100%;padding:10px;border:1px solid var(--bd);border-radius:10px;background:var(--bg);color:var(--tx);margin:4px 0 10px}
+label{font-size:13px;color:var(--mu)}
+.row{display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.tag{font-size:12px;background:var(--bg);border:1px solid var(--bd);border-radius:20px;padding:2px 10px;color:var(--mu)}
+.opt{display:block;width:100%;text-align:left;margin:6px 0}
+.opt.ok{border-color:var(--ok);color:var(--ok)}.opt.no{border-color:var(--no);color:var(--no)}
+.bar{height:6px;background:var(--bd);border-radius:6px;overflow:hidden}.bar i{display:block;height:100%;background:var(--ac)}
+.muted{color:var(--mu);font-size:14px}.hide{display:none}table{width:100%;border-collapse:collapse}td{border-top:1px solid var(--bd);padding:6px 4px;vertical-align:top;font-size:15px}td:first-child{color:var(--mu);width:36%}.chips{display:flex;gap:6px;overflow-x:auto;margin:6px 0 10px}.chip{white-space:nowrap;border-radius:20px;padding:6px 12px}.chip.on{background:var(--bl);color:var(--ac2);border-color:var(--bl)}summary{cursor:pointer}button:disabled{opacity:.45;cursor:default}mjx-container{max-width:100%;overflow-x:auto;overflow-y:hidden}
+a{color:var(--bl)}
+</style>
+</head>
+<body>
+<header><h1>Sibils<span>Hub</span></h1><p>Practice quizzes, your uploaded reviewers, and a quick-look library of figures and NSCP references.</p></header>
+<nav id="nav"></nav>
+<main>
+ <section id="mats"></section>
+ <section id="quiz" class="hide"></section>
+ <section id="figs" class="hide"></section>
+ <section id="solver" class="hide"></section>
+ <section id="bank" class="hide"></section>
+</main>
+<script>
+const QG={MSTC:["Algebra","Trigonometry","Analytic Geometry","Calculus","Surveying","Transportation"],HPGE:["Hydraulics","Geotechnical"],PSAD:["Statics","Dynamics","Structural Analysis","Materials"]},SUBJECTS=Object.values(QG).flat();
+const SEED=[
+{s:"Algebra",q:"Solve $x^2-5x+6=0$.",o:["x = 2 or 3","x = −2 or −3","x = 1 or 6","x = −1 or 6"],a:0,e:"$(x-2)(x-3)=0$, so $x=2$ or $x=3$."},
+{s:"Algebra",q:"Evaluate log₂ 32.",o:["4","5","6","16"],a:1,e:"$2^5=32$, so the answer is 5."},
+{s:"Trigonometry",q:"A right triangle has a hypotenuse of 10 m and an angle of 30°. The side opposite that angle is?",o:["5 m","8.66 m","10 m","17.3 m"],a:0,e:"Opposite = 10 sin 30° = 5 m."},
+{s:"Trigonometry",q:"sin² 25° + cos² 25° equals?",o:["0.5","1","0.906","0.423"],a:1,e:"By the Pythagorean identity, sin²θ + cos²θ = 1 for any angle."},
+{s:"Analytic Geometry",q:"Distance between (1, 2) and (4, 6)?",o:["3","4","5","7"],a:2,e:"d = √(3² + 4²) = 5."},
+{s:"Analytic Geometry",q:"Find the center and radius of x² + y² − 6x + 4y − 12 = 0.",o:["(3, −2), r = 5","(−3, 2), r = 5","(3, −2), r = 25","(6, −4), r = 5"],a:0,e:"Completing the square gives (x − 3)² + (y + 2)² = 25."},
+{s:"Surveying",q:"A 30 m steel tape is actually 30.02 m long. A line measured as 150.00 m has a true length of?",o:["149.90 m","150.00 m","150.10 m","150.02 m"],a:2,e:"True length = 150 × (30.02/30) = 150.10 m. A tape that is too long records a distance that is too short."},
+{s:"Surveying",q:"The bearing N 45° E has an azimuth (from north) of?",o:["45°","135°","225°","315°"],a:0,e:"A northeast bearing equals its azimuth, 45°."},
+{s:"Transportation",q:"A car travels at 60 km/h. What is its speed in m/s?",o:["10 m/s","16.67 m/s","21.6 m/s","6 m/s"],a:1,e:"60 ÷ 3.6 = 16.67 m/s."},
+{s:"Transportation",q:"Stopping sight distance is the sum of which two distances?",o:["Perception-reaction and braking","Braking and lateral clearance","Passing and braking","Decision and headway"],a:0,e:"SSD = distance covered during perception-reaction time + braking distance."},
+{s:"Transportation",q:"Distance covered at 80 km/h during a 2.5 s reaction time, using d = 0.278Vt?",o:["27.8 m","55.6 m","80 m","111.2 m"],a:1,e:"d = 0.278 × 80 × 2.5 = 55.6 m."},
+{s:"Hydraulics",q:"In Manning's formula, the velocity V equals?",o:["(1/n) R^(2/3) S^(1/2)","(1/n) R^(1/2) S^(2/3)","n R^(2/3) S^(1/2)","(1/n) R^(3/2) S^(1/2)"],a:0,e:"Manning: V = (1/n) R^(2/3) S^(1/2), where R is the hydraulic radius and S the slope."},
+{s:"Geotechnical",q:"A soil has a unit weight of 18 kN/m³. Total vertical stress at 5 m depth (no water table)?",o:["3.6 kPa","90 kPa","180 kPa","9 kPa"],a:1,e:"σ = γh = 18 × 5 = 90 kPa."},
+{s:"Hydraulics",q:"Pressure at a depth of 10 m in fresh water (γ = 9.81 kN/m³)?",o:["9.81 kPa","98.1 kPa","981 kPa","19.62 kPa"],a:1,e:"p = γh = 9.81 × 10 = 98.1 kPa."},
+{s:"Hydraulics",q:"Water flows at 2 m/s in a 0.20 m diameter pipe. Find Q.",o:["0.0314 m³/s","0.0628 m³/s","0.1256 m³/s","0.4 m³/s"],a:1,e:"Q = AV = (π/4)(0.2)²(2) ≈ 0.0628 m³/s."},
+{s:"Structural Analysis",q:"Simply supported beam, L = 6 m, uniform load w = 10 kN/m. Maximum moment?",o:["30 kN·m","45 kN·m","60 kN·m","90 kN·m"],a:1,e:"$M=\\frac{wL^2}{8}=\\frac{10(6)^2}{8}=45$ kN·m."},
+{s:"Structural Analysis",q:"Cantilever, L = 3 m, point load P = 20 kN at the free end. Fixed-end moment?",o:["6.67 kN·m","30 kN·m","60 kN·m","120 kN·m"],a:2,e:"M = PL = 20 × 3 = 60 kN·m."},
+{s:"Geotechnical",q:"Void ratio e = 0.5. What is the porosity n?",o:["0.25","0.33","0.50","0.67"],a:1,e:"n = e/(1+e) = 0.5/1.5 ≈ 0.33."},
+{s:"Geotechnical",q:"Total stress is 200 kPa and pore pressure is 50 kPa. Effective stress?",o:["250 kPa","150 kPa","200 kPa","50 kPa"],a:1,e:"σ′ = σ − u = 200 − 50 = 150 kPa."},
+{s:"Surveying",q:"Sum of the interior angles of a closed hexagon?",o:["540°","630°","720°","900°"],a:2,e:"(n − 2)(180°) = 4 × 180° = 720°."},
+{s:"Calculus",q:"Evaluate $\\int_0^3 x^2\\,dx$.",o:["3","9","18","27"],a:1,e:"$\\frac{x^3}{3}\\Big|_0^3=\\frac{27}{3}=9$."},
+{s:"Materials",q:"Approximate modulus of elasticity of structural steel?",o:["20 GPa","70 GPa","200 GPa","2000 GPa"],a:2,e:"Steel has E ≈ 200 GPa (about 200,000 MPa)."},
+{s:"Statics",q:"A 100 N force acts 30° above the horizontal. Find its horizontal component $F_x$.",o:["50 N","86.6 N","100 N","57.7 N"],a:1,e:"$F_x=F\\cos\\theta=100\\cos30°=86.6$ N."},
+{s:"Statics",q:"A 10 kN load acts at midspan of a simply supported beam. Reaction at each support?",o:["5 kN","10 kN","20 kN","2.5 kN"],a:0,e:"By symmetry each support carries $P/2=5$ kN."},
+{s:"Dynamics",q:"A car starts from rest and accelerates at 2 m/s² for 5 s. Distance traveled?",o:["10 m","25 m","50 m","5 m"],a:1,e:"$s=\\tfrac{1}{2}at^2=\\tfrac{1}{2}(2)(5)^2=25$ m."},
+{s:"Dynamics",q:"Kinetic energy of a 10 kg mass moving at 4 m/s?",o:["20 J","40 J","80 J","160 J"],a:2,e:"$KE=\\tfrac{1}{2}mv^2=\\tfrac{1}{2}(10)(4)^2=80$ J."},
+{s:"Calculus",q:"Find $\\dfrac{dy}{dx}$ if $y=x^3+2x$.",o:["$3x^2+2$","$x^2+2$","$3x^2$","$3x+2$"],a:0,e:"Power rule: $3x^2+2$."},
+{s:"Structural Analysis",q:"A propped cantilever beam is statically indeterminate to what degree?",o:["0","1","2","3"],a:1,e:"It has 4 reactions and 3 equilibrium equations, so the degree is 4 − 3 = 1."}
+];
+const $=s=>document.querySelector(s);
+const esc=t=>String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){alert("Storage is full or blocked.")}}};
+let db=null;const mem=new Map();
+function openDB(){return new Promise(r=>{try{const q=indexedDB.open("ce-hub",1);q.onupgradeneeded=()=>q.result.createObjectStore("f");q.onsuccess=()=>{db=q.result;r()};q.onerror=()=>r()}catch(e){r()}})}
+function putFile(id,blob){return new Promise(r=>{if(!db){mem.set(id,blob);return r()}const t=db.transaction("f","readwrite");t.objectStore("f").put(blob,id);t.oncomplete=()=>r();t.onerror=()=>{mem.set(id,blob);r()}})}
+function getFile(id){return new Promise(r=>{if(!db)return r(mem.get(id));const q=db.transaction("f").objectStore("f").get(id);q.onsuccess=()=>r(q.result||mem.get(id));q.onerror=()=>r(mem.get(id))})}
+function delFile(id){mem.delete(id);if(db)try{db.transaction("f","readwrite").objectStore("f").delete(id)}catch(e){}}
+
+/* NAV */
+const TABS=[["quiz","Quiz hub"],["mats","Upload"],["figs","Formulas"],["solver","Beam solver"],["bank","My questions"]];
+function show(id){TABS.forEach(([k])=>{$("#"+k).classList.toggle("hide",k!==id)});[...$("#nav").children].forEach((b,i)=>b.classList.toggle("on",TABS[i][0]===id));if(id==="quiz"&&!$("#quiz").innerHTML.trim())quizSetup();if(id==="figs")typeset($("#figs"))}
+$("#nav").innerHTML=TABS.map(([k,l])=>`<button data-k="${k}">${l}</button>`).join("");
+$("#nav").onclick=e=>{const k=e.target.dataset.k;if(k)show(k)};
+
+/* MATERIALS */
+function renderMats(filter){
+ const m=LS.get("mats",[]);const f=filter||"All";
+ const list=m.filter(x=>f==="All"||x.subject===f);
+ $("#mats").innerHTML=`<div class="card"><label>Subject</label>
+ <select id="mSub">${SUBJECTS.map(s=>`<option>${s}</option>`).join("")}</select>
+ <label>Choose files (PDF, images, docs)</label><input type="file" id="mFile" multiple>
+ <button class="p" id="mAdd">Upload</button>
+ <p class="muted">Files stay in this browser on your device. Sharing with classmates needs an online backend (next step).</p></div>
+ <div class="row"><label>Filter</label><select id="mFil" style="width:auto"><option>All</option>${SUBJECTS.map(s=>`<option ${s===f?"selected":""}>${s}</option>`).join("")}</select></div>
+ ${list.length?list.map(x=>`<div class="card row"><div><b>${esc(x.name)}</b><br><span class="tag">${esc(x.subject)}</span> <span class="muted">${(x.size/1024).toFixed(0)} KB</span></div>
+ <div><button data-o="${x.id}">Open</button> <button data-d="${x.id}">Delete</button></div></div>`).join(""):`<p class="muted">No materials yet. Upload your first reviewer above.</p>`}`;
+ $("#mFil").onchange=e=>renderMats(e.target.value);
+ $("#mAdd").onclick=async()=>{
+  const files=[...$("#mFile").files];if(!files.length)return;
+  const all=LS.get("mats",[]);
+  for(const fl of files){const id=Date.now()+"-"+Math.random().toString(36).slice(2,7);await putFile(id,fl);all.push({id,name:fl.name,subject:$("#mSub").value,size:fl.size})}
+  LS.set("mats",all);renderMats(f)};
+ $("#mats").querySelectorAll("[data-o]").forEach(b=>b.onclick=async()=>{const bl=await getFile(b.dataset.o);if(!bl)return alert("File not found on this device.");window.open(URL.createObjectURL(bl),"_blank")});
+ $("#mats").querySelectorAll("[data-d]").forEach(b=>b.onclick=()=>{if(!confirm("Delete this file?"))return;delFile(b.dataset.d);LS.set("mats",LS.get("mats",[]).filter(x=>x.id!==b.dataset.d));renderMats(f)});
+}
+
+/* QUIZ */
+const bankAll=()=>SEED.concat(LS.get("qs",[]));
+let Q=null,timer=null;
+function quizSetup(){
+ clearInterval(timer);const b=bankAll();
+ const hist=LS.get("hist",[]);
+ $("#quiz").innerHTML=`<div class="card"><label>Subject</label>
+ <select id="qSub"><option>All</option>${SUBJECTS.map(s=>`<option>${s}</option>`).join("")}</select>
+ <label>Number of questions</label><input id="qN" type="number" min="1" value="5">
+ <label>Time limit in minutes (0 = no limit)</label><input id="qT" type="number" min="0" value="0">
+ <button class="p" id="qGo">Start quiz</button>
+ <p class="muted">${b.length} questions in the bank.</p></div>
+ ${hist.length?`<div class="card"><b>Recent scores</b>${hist.slice(-5).reverse().map(h=>`<div class="row muted"><span>${esc(h.s)} · ${esc(h.d)}</span><span>${h.c}/${h.n}</span></div>`).join("")}</div>`:""}`;
+ $("#qGo").onclick=()=>{
+  const sub=$("#qSub").value;let pool=b.filter(x=>sub==="All"||x.s===sub);
+  if(!pool.length)return alert("No questions for that subject yet.");
+  pool=pool.map(x=>({x,r:Math.random()})).sort((a,b)=>a.r-b.r).map(o=>o.x).slice(0,Math.max(1,+$("#qN").value||5));
+  const mins=+$("#qT").value||0;
+  Q={sub,list:pool,i:0,ans:[],left:mins*60,mins};
+  if(mins){timer=setInterval(()=>{Q.left--;const t=$("#tm");if(t)t.textContent=fmt(Q.left);if(Q.left<=0)finish()},1000)}
+  ask()};
+}
+const fmt=s=>Math.floor(s/60)+":"+String(s%60).padStart(2,"0");
+const typeset=el=>{try{if(window.MathJax&&MathJax.typesetPromise)MathJax.typesetPromise([el||$("#quiz")])}catch(e){}};
+const imgTag=q=>q.img?`<img src="${q.img}" alt="Diagram" style="max-width:100%;border-radius:8px;background:#fff;margin:6px 0">`:"";
+function shrink(file){return new Promise(r=>{const fr=new FileReader();fr.onload=()=>{const im=new Image();im.onload=()=>{const k=Math.min(1,700/im.width),c=document.createElement("canvas");c.width=im.width*k;c.height=im.height*k;const x=c.getContext("2d");x.fillStyle="#fff";x.fillRect(0,0,c.width,c.height);x.drawImage(im,0,0,c.width,c.height);r(c.toDataURL("image/jpeg",.85))};im.onerror=()=>r("");im.src=fr.result};fr.onerror=()=>r("");fr.readAsDataURL(file)})}
+function ask(){
+ const q=Q.list[Q.i];
+ $("#quiz").innerHTML=`<div class="card"><div class="row"><span class="tag">${esc(q.s)}</span><span class="muted">${Q.i+1}/${Q.list.length}${Q.mins?` · <b id="tm">${fmt(Q.left)}</b>`:""}</span></div>
+ <div class="bar" style="margin:10px 0"><i style="width:${Q.i/Q.list.length*100}%"></i></div>
+ <p><b>${esc(q.q)}</b></p>${imgTag(q)}${q.o.map((o,i)=>`<button class="opt" data-i="${i}">${String.fromCharCode(65+i)}. ${esc(o)}</button>`).join("")}</div>`;
+ $("#quiz").querySelectorAll(".opt").forEach(b=>b.onclick=()=>{Q.ans[Q.i]=+b.dataset.i;if(++Q.i>=Q.list.length)finish();else ask()});
+ typeset();
+}
+function finish(){
+ clearInterval(timer);if(!Q)return;
+ const L=Q.list,c=L.filter((q,i)=>Q.ans[i]===q.a).length;
+ const h=LS.get("hist",[]);h.push({s:Q.sub,c,n:L.length,d:new Date().toLocaleDateString()});LS.set("hist",h.slice(-30));
+ $("#quiz").innerHTML=`<div class="card"><h2 style="margin:0">Score: ${c}/${L.length} (${Math.round(c/L.length*100)}%)</h2></div>
+ ${L.map((q,i)=>`<div class="card"><p><b>${i+1}. ${esc(q.q)}</b></p>${imgTag(q)}${q.o.map((o,j)=>`<div class="opt ${j===q.a?"ok":j===Q.ans[i]?"no":""}" style="padding:6px 0">${String.fromCharCode(65+j)}. ${esc(o)}${j===q.a?" ✓":j===Q.ans[i]?" ✗":""}</div>`).join("")}<p class="muted">${esc(q.e||"")}</p></div>`).join("")}
+ <button class="p" id="again">Back to quiz hub</button>`;
+ Q=null;$("#again").onclick=quizSetup;typeset();
+}
+
+/* ADD QUESTIONS */
+function renderBank(){
+ const mine=LS.get("qs",[]);
+ $("#bank").innerHTML=`<div class="card"><label>Subject</label><select id="bS">${SUBJECTS.map(s=>`<option>${s}</option>`).join("")}</select>
+ <label>Question</label><textarea id="bQ" rows="2"></textarea>
+ <p class="muted" style="margin:0 0 8px">Equations: wrap in dollar signs, e.g. $x^2$ or $\\frac{a}{b}$</p>
+ <label>Diagram image (optional)</label><input type="file" id="bImg" accept="image/*">
+ ${[0,1,2,3].map(i=>`<label>Choice ${String.fromCharCode(65+i)}</label><input class="bo">`).join("")}
+ <label>Correct answer</label><select id="bA"><option value="0">A</option><option value="1">B</option><option value="2">C</option><option value="3">D</option></select>
+ <label>Solution / explanation</label><textarea id="bE" rows="2"></textarea>
+ <button class="p" id="bAdd">Save question</button></div>
+ <p class="muted">Your questions (${mine.length})</p>
+ ${mine.map((q,i)=>`<div class="card row"><span>${esc(q.q.slice(0,70))}</span><button data-x="${i}">Delete</button></div>`).join("")}`;
+ $("#bAdd").onclick=async()=>{
+  const o=[...$("#bank").querySelectorAll(".bo")].map(x=>x.value.trim());
+  if(!$("#bQ").value.trim()||o.some(x=>!x))return alert("Fill in the question and all four choices.");
+  mine.push({s:$("#bS").value,q:$("#bQ").value.trim(),o,a:+$("#bA").value,e:$("#bE").value.trim(),img:$("#bImg").files[0]?await shrink($("#bImg").files[0]):""});
+  LS.set("qs",mine);if(!Q)$("#quiz").innerHTML="";renderBank()};
+ $("#bank").querySelectorAll("[data-x]").forEach(b=>b.onclick=()=>{mine.splice(+b.dataset.x,1);LS.set("qs",mine);renderBank()});
+}
+
+/* DIAGRAMS & NSCP REFERENCE */
+const FIGS=[
+{c:"Beams",t:"Simply supported, uniform load",f:"ssu",v:[["Reactions","$R=\\frac{wL}{2}$"],["Max shear","$V_{max}=\\frac{wL}{2}$ at supports"],["Max moment","$M_{max}=\\frac{wL^2}{8}$ at midspan"],["Max deflection","$\\delta_{max}=\\frac{5wL^4}{384EI}$"]]},
+{c:"Beams",t:"Simply supported, midspan point load",f:"ssp",v:[["Reactions","$R=\\frac{P}{2}$"],["Max shear","$V_{max}=\\frac{P}{2}$"],["Max moment","$M_{max}=\\frac{PL}{4}$ at midspan"],["Max deflection","$\\delta_{max}=\\frac{PL^3}{48EI}$"]]},
+{c:"Beams",t:"Cantilever, end point load",f:"cp",v:[["Reaction","$R=P$"],["Max moment","$M_{max}=PL$ at the fixed end"],["Max deflection","$\\delta_{max}=\\frac{PL^3}{3EI}$ at the free end"]]},
+{c:"Beams",t:"Cantilever, uniform load",f:"cu",v:[["Reaction","$R=wL$"],["Max moment","$M_{max}=\\frac{wL^2}{2}$ at the fixed end"],["Max deflection","$\\delta_{max}=\\frac{wL^4}{8EI}$"]]},
+{c:"Beams",t:"Fixed-fixed beam, uniform load",f:"fu",v:[["Reactions","$R=\\frac{wL}{2}$"],["End moment","$M=\\frac{wL^2}{12}$ (hogging)"],["Midspan moment","$M=\\frac{wL^2}{24}$ (sagging)"],["Max deflection","$\\delta_{max}=\\frac{wL^4}{384EI}$"]]},
+{c:"NSCP",t:"Strength design load combinations",r:"NSCP 2015 Sec. 203",v:[["1","1.4D"],["2","1.2D + 1.6L + 0.5(Lr or R)"],["3","1.2D + 1.6(Lr or R) + (L or 0.5W)"],["4","1.2D + 1.0W + L + 0.5(Lr or R)"],["5","1.2D + 1.0E + L"],["6","0.9D + 1.0W"],["7","0.9D + 1.0E"]],n:"D dead, L live, Lr roof live, R rain, W wind, E earthquake. Check Sec. 203 for the complete list, including special cases and the seismic overstrength combinations."},
+{c:"NSCP",t:"Static seismic base shear",r:"NSCP 2015 Sec. 208",v:[["Design base shear","$V=\\frac{C_vIW}{RT}$"],["Upper limit","$V\\le\\frac{2.5C_aIW}{R}$"],["Lower limit","$V\\ge0.11C_aIW$"],["Zone 4 minimum","$V\\ge\\frac{0.8ZN_vIW}{R}$"],["Period","$T=C_t(h_n)^{3/4}$, with $h_n$ in m"],["$C_t$","0.0853 steel moment frame · 0.0731 concrete moment frame · 0.0488 others"],["Zone factor","$Z=0.20$ (Zone 2), $Z=0.40$ (Zone 4)"]],n:"$C_a$, $C_v$, $N_a$, $N_v$, $R$ and $I$ come from the tables in that section. Look them up in your copy of the code."},
+{c:"Concrete",t:"Reinforced concrete strength design",r:"NSCP 2015 Ch. 4 (ACI 318M-14 based)",v:[["Modulus of elasticity","$E_c=4700\\sqrt{f'_c}$ MPa"],["Modulus of rupture","$f_r=0.62\\sqrt{f'_c}$ MPa"],["Ultimate concrete strain","$\\varepsilon_{cu}=0.003$"],["Stress block depth","$a=\\frac{A_sf_y}{0.85f'_cb}$"],["Nominal moment","$M_n=A_sf_y\\left(d-\\frac{a}{2}\\right)$"],["$\\beta_1$","0.85 for $f'_c\\le28$ MPa, minus 0.05 per 7 MPa above, min 0.65"],["Minimum steel","$\\rho_{min}=\\max\\left(\\frac{\\sqrt{f'_c}}{4f_y},\\frac{1.4}{f_y}\\right)$"],["Strength reduction $\\phi$","0.90 tension-controlled · 0.65 tied columns · 0.75 spiral columns and shear"]]},
+{c:"Materials",t:"Typical material properties",r:"Confirm with NSCP 2015 tables",v:[["Steel modulus $E_s$","200 GPa (200 000 MPa)"],["Structural steel A36","$F_y\\approx248$ MPa, $F_u\\approx400$ MPa"],["Rebar Grade 40 / Grade 60","$f_y=275$ / $415$ MPa"],["Unit weight, steel","about 77–78.5 kN/m³"],["Unit weight, reinforced concrete","about 23.5–24 kN/m³"],["Unit weight, water","9.81 kN/m³"]],n:"Use the exact values your instructor or the code tables specify."},
+{c:"Surveying",t:"Taping, leveling, stadia, traverse",v:[["Temperature","$C_t=\\alpha L(T-T_0)$, $\\alpha_{steel}=11.25\\times10^{-6}$ per °C"],["Pull","$C_p=\\frac{(P-P_0)L}{AE}$"],["Sag","$C_s=\\frac{w^2L^3}{24P^2}$"],["Slope","$C_h\\approx\\frac{h^2}{2s}$"],["Curvature and refraction","$h=0.0675K^2$ (m, $K$ in km)"],["Stadia","$H=Ks\\cos^2\\alpha$, $V=\\tfrac{1}{2}Ks\\sin2\\alpha$"],["Latitude, departure","$Lat=L\\cos\\theta$, $Dep=L\\sin\\theta$"],["Interior angles","$\\Sigma=(n-2)180^\\circ$"]]},
+{c:"Transportation",t:"Highway geometry and sight distance",v:[["Stopping sight distance","$SSD=0.278Vt+\\frac{V^2}{254(f\\pm G)}$ ($V$ in km/h, $t$ in s)"],["Minimum curve radius","$R=\\frac{V^2}{127(e+f)}$ ($V$ in km/h, $R$ in m)"],["Tangent distance","$T=R\\tan\\frac{I}{2}$"],["Long chord","$LC=2R\\sin\\frac{I}{2}$"],["External distance","$E=R\\left(\\sec\\frac{I}{2}-1\\right)$"],["Middle ordinate","$M=R\\left(1-\\cos\\frac{I}{2}\\right)$"],["Curve length","$L_c=\\frac{\\pi RI}{180}$ ($I$ in degrees)"],["Vertical curve","$y=\\frac{g_2-g_1}{2L}x^2$, rate $r=\\frac{g_2-g_1}{L}$"],["Traffic flow","$q=kv$"]]},
+{c:"Hydraulics",t:"Fluid statics and flow",v:[["Pressure","$p=\\gamma h$"],["Hydrostatic force","$F=\\gamma\\bar{h}A$"],["Buoyancy","$F_B=\\gamma V_{displaced}$"],["Continuity","$Q=A_1V_1=A_2V_2$"],["Bernoulli","$\\frac{p_1}{\\gamma}+\\frac{V_1^2}{2g}+z_1=\\frac{p_2}{\\gamma}+\\frac{V_2^2}{2g}+z_2$"],["Darcy-Weisbach","$h_f=f\\frac{L}{D}\\frac{V^2}{2g}$"],["Manning","$V=\\frac{1}{n}R^{2/3}S^{1/2}$, $R=\\frac{A}{P}$"],["Orifice","$Q=C_dA\\sqrt{2gh}$"],["Rectangular weir","$Q=\\frac{2}{3}C_d\\sqrt{2g}\\,LH^{3/2}$"]]},
+{c:"Geotechnical",t:"Soil properties, stresses, bearing capacity",v:[["Void ratio, porosity","$e=\\frac{V_v}{V_s}$, $n=\\frac{e}{1+e}$"],["Phase relation","$Se=wG_s$"],["Unit weight","$\\gamma=\\frac{(G_s+Se)\\gamma_w}{1+e}$, $\\gamma_d=\\frac{G_s\\gamma_w}{1+e}$"],["Effective stress","$\\sigma'=\\sigma-u$"],["Darcy","$q=kiA$"],["Mohr-Coulomb","$\\tau=c+\\sigma'\\tan\\phi$"],["Rankine coefficients","$K_a=\\frac{1-\\sin\\phi}{1+\\sin\\phi}$, $K_p=\\frac{1}{K_a}$"],["Bearing capacity (strip)","$q_{ult}=cN_c+qN_q+0.5\\gamma BN_\\gamma$"],["Consolidation settlement","$S=\\frac{C_cH}{1+e_0}\\log\\frac{\\sigma'_0+\\Delta\\sigma}{\\sigma'_0}$"]]},
+{c:"Algebra",t:"Exponents, logarithms, quadratics",v:[["Exponents","$a^ma^n=a^{m+n}$, $\\frac{a^m}{a^n}=a^{m-n}$, $(a^m)^n=a^{mn}$"],["Log rules","$\\log xy=\\log x+\\log y$, $\\log x^n=n\\log x$"],["Change of base","$\\log_bx=\\frac{\\ln x}{\\ln b}$"],["Quadratic formula","$x=\\frac{-b\\pm\\sqrt{b^2-4ac}}{2a}$"],["Sum and product of roots","$x_1+x_2=-\\frac{b}{a}$, $x_1x_2=\\frac{c}{a}$"],["Special products","$a^2-b^2=(a-b)(a+b)$, $(a\\pm b)^2=a^2\\pm2ab+b^2$"]]},
+{c:"Algebra",t:"Progressions, binomial theorem, complex numbers",v:[["Arithmetic","$a_n=a_1+(n-1)d$, $S_n=\\frac{n}{2}(a_1+a_n)$"],["Geometric","$a_n=a_1r^{n-1}$, $S_n=\\frac{a_1(1-r^n)}{1-r}$"],["Infinite geometric","$S=\\frac{a_1}{1-r}$ for $|r|<1$"],["Binomial","$(x+y)^n=\\sum_{k=0}^{n}\\binom{n}{k}x^{n-k}y^k$"],["Polar form","$z=r(\\cos\\theta+i\\sin\\theta)=re^{i\\theta}$"],["De Moivre","$z^n=r^n(\\cos n\\theta+i\\sin n\\theta)$"]]},
+{c:"Trigonometry",t:"Identities and special angles",v:[["Pythagorean","$\\sin^2\\theta+\\cos^2\\theta=1$, $1+\\tan^2\\theta=\\sec^2\\theta$"],["Double angle","$\\sin2\\theta=2\\sin\\theta\\cos\\theta$, $\\cos2\\theta=\\cos^2\\theta-\\sin^2\\theta$"],["Sum of angles","$\\sin(A\\pm B)=\\sin A\\cos B\\pm\\cos A\\sin B$"],["Sum of angles","$\\cos(A\\pm B)=\\cos A\\cos B\\mp\\sin A\\sin B$"],["Special angles","$\\sin30^\\circ=0.5$, $\\sin45^\\circ=0.7071$, $\\sin60^\\circ=0.8660$"],["Radians","$180^\\circ=\\pi$ rad"]]},
+{c:"Trigonometry",t:"Triangles (surveying and statics)",v:[["Law of sines","$\\frac{a}{\\sin A}=\\frac{b}{\\sin B}=\\frac{c}{\\sin C}$"],["Law of cosines","$c^2=a^2+b^2-2ab\\cos C$"],["Area","$A=\\tfrac{1}{2}ab\\sin C$"],["Heron","$A=\\sqrt{s(s-a)(s-b)(s-c)}$, $s=\\frac{a+b+c}{2}$"],["Force components","$F_x=F\\cos\\theta$, $F_y=F\\sin\\theta$"]]},
+{c:"Analytic Geometry",t:"Lines, conics, polygon area",v:[["Distance","$d=\\sqrt{(x_2-x_1)^2+(y_2-y_1)^2}$"],["Slope, point-slope","$m=\\frac{y_2-y_1}{x_2-x_1}$, $y-y_1=m(x-x_1)$"],["Point to line","$d=\\frac{|Ax_1+By_1+C|}{\\sqrt{A^2+B^2}}$"],["Circle","$(x-h)^2+(y-k)^2=r^2$"],["Parabola","$(x-h)^2=4p(y-k)$"],["Ellipse","$\\frac{(x-h)^2}{a^2}+\\frac{(y-k)^2}{b^2}=1$"],["Area from coordinates","$A=\\tfrac{1}{2}\\left|\\sum(x_iy_{i+1}-x_{i+1}y_i)\\right|$"]]},
+{c:"Calculus",t:"Derivatives",v:[["Power","$\\frac{d}{dx}x^n=nx^{n-1}$"],["Product","$(uv)'=u'v+uv'$"],["Quotient","$\\left(\\frac{u}{v}\\right)'=\\frac{u'v-uv'}{v^2}$"],["Chain rule","$\\frac{dy}{dx}=\\frac{dy}{du}\\cdot\\frac{du}{dx}$"],["Trig","$(\\sin x)'=\\cos x$, $(\\cos x)'=-\\sin x$, $(\\tan x)'=\\sec^2x$"],["Exponential, log","$(e^x)'=e^x$, $(\\ln x)'=\\frac{1}{x}$"],["Max and min","Set $f'(x)=0$; concave up if $f''(x)>0$"]]},
+{c:"Calculus",t:"Integrals, centroids, moment of inertia",v:[["Power","$\\int x^n\\,dx=\\frac{x^{n+1}}{n+1}+C$ for $n\\ne-1$"],["Reciprocal, exponential","$\\int\\frac{dx}{x}=\\ln|x|+C$, $\\int e^x\\,dx=e^x+C$"],["Trig","$\\int\\sin x\\,dx=-\\cos x+C$, $\\int\\cos x\\,dx=\\sin x+C$"],["By parts","$\\int u\\,dv=uv-\\int v\\,du$"],["Area between curves","$A=\\int_a^b(f-g)\\,dx$"],["Centroid","$\\bar{x}=\\frac{\\int x\\,dA}{\\int dA}$"],["Moment of inertia","$I_x=\\int y^2\\,dA$; rectangle $\\frac{bh^3}{12}$; circle $\\frac{\\pi d^4}{64}$"]]},
+{c:"Diff. Equations",t:"First-order ODEs",v:[["Separable","$\\frac{dy}{dx}=f(x)g(y)\\Rightarrow\\int\\frac{dy}{g(y)}=\\int f(x)\\,dx$"],["Linear","$y'+P(x)y=Q(x)$, with $\\mu=e^{\\int P\\,dx}$ and $y=\\frac{1}{\\mu}\\int\\mu Q\\,dx$"],["Exact","$M\\,dx+N\\,dy=0$ if $\\frac{\\partial M}{\\partial y}=\\frac{\\partial N}{\\partial x}$"],["Growth and decay","$\\frac{dN}{dt}=kN\\Rightarrow N=N_0e^{kt}$"],["Newton cooling","$T=T_s+(T_0-T_s)e^{-kt}$"]]},
+{c:"Diff. Equations",t:"Second-order linear ODEs, vibration, beams",v:[["Form","$ay''+by'+cy=0$, characteristic equation $ar^2+br+c=0$"],["Distinct real roots","$y=C_1e^{r_1x}+C_2e^{r_2x}$"],["Repeated root","$y=(C_1+C_2x)e^{rx}$"],["Complex roots $\\alpha\\pm\\beta i$","$y=e^{\\alpha x}(C_1\\cos\\beta x+C_2\\sin\\beta x)$"],["Free vibration","$m\\ddot{x}+c\\dot{x}+kx=0$, $\\omega_n=\\sqrt{k/m}$"],["Beam equations","$EI\\frac{d^2y}{dx^2}=M(x)$, $EI\\frac{d^4y}{dx^4}=w(x)$ (sign depends on convention)"]]},
+{c:"Numerical Methods",t:"Roots of equations",v:[["Newton-Raphson","$x_{n+1}=x_n-\\frac{f(x_n)}{f'(x_n)}$"],["Secant","$x_{n+1}=x_n-\\frac{f(x_n)(x_n-x_{n-1})}{f(x_n)-f(x_{n-1})}$"],["Bisection","$c=\\frac{a+b}{2}$; keep the half where $f$ changes sign"],["Approximate error","$\\varepsilon_a=\\left|\\frac{x_{new}-x_{old}}{x_{new}}\\right|\\times100\\%$"]]},
+{c:"Numerical Methods",t:"Integration, differentiation, ODEs",v:[["Trapezoidal","$\\int_a^bf\\,dx\\approx\\frac{h}{2}\\left[f_0+2\\sum f_i+f_n\\right]$"],["Simpson 1/3 (n even)","$\\frac{h}{3}\\left[f_0+4\\sum f_{odd}+2\\sum f_{even}+f_n\\right]$"],["Central difference","$f'(x)\\approx\\frac{f(x+h)-f(x-h)}{2h}$"],["Euler","$y_{i+1}=y_i+hf(x_i,y_i)$"],["Runge-Kutta 4","$y_{i+1}=y_i+\\frac{h}{6}(k_1+2k_2+2k_3+k_4)$"]]},
+{c:"Linear Algebra",t:"Matrices, systems, vectors",v:[["System","$A\\mathbf{x}=\\mathbf{b}$"],["Determinant 2x2","$\\det=ad-bc$"],["Cramer's rule","$x_i=\\frac{\\det A_i}{\\det A}$"],["Gauss elimination","Reduce to upper triangular, then back-substitute"],["Eigenvalues","$\\det(A-\\lambda I)=0$"],["Stiffness method","$\\{F\\}=[K]\\{\\Delta\\}$"],["Dot product","$\\mathbf{a}\\cdot\\mathbf{b}=|a||b|\\cos\\theta$"],["Cross product (moments)","$|\\mathbf{a}\\times\\mathbf{b}|=|a||b|\\sin\\theta$, $\\mathbf{M}=\\mathbf{r}\\times\\mathbf{F}$"]]},
+{c:"Probability & Stats",t:"Probability and statistics",v:[["Mean","$\\bar{x}=\\frac{\\sum x_i}{n}$"],["Sample std. deviation","$s=\\sqrt{\\frac{\\sum(x_i-\\bar{x})^2}{n-1}}$"],["Standard normal","$z=\\frac{x-\\mu}{\\sigma}$"],["Permutation, combination","$P(n,r)=\\frac{n!}{(n-r)!}$, $\\binom{n}{r}=\\frac{n!}{r!(n-r)!}$"],["Union","$P(A\\cup B)=P(A)+P(B)-P(A\\cap B)$"],["Conditional","$P(A|B)=\\frac{P(A\\cap B)}{P(B)}$"],["Binomial","$P(x)=\\binom{n}{x}p^x(1-p)^{n-x}$"]]},
+{c:"Advanced Math",t:"Series and Laplace transforms",v:[["Taylor","$f(x)=\\sum_{n=0}^{\\infty}\\frac{f^{(n)}(a)}{n!}(x-a)^n$"],["Maclaurin","$e^x=1+x+\\frac{x^2}{2!}+\\frac{x^3}{3!}+\\cdots$"],["Maclaurin","$\\sin x=x-\\frac{x^3}{3!}+\\frac{x^5}{5!}-\\cdots$"],["Double integral","$A=\\iint dx\\,dy$"],["Laplace","$\\mathcal{L}\\{f\\}=\\int_0^\\infty e^{-st}f(t)\\,dt$"],["Common pairs","$\\mathcal{L}\\{e^{at}\\}=\\frac{1}{s-a}$, $\\mathcal{L}\\{\\sin\\omega t\\}=\\frac{\\omega}{s^2+\\omega^2}$"]]},
+{c:"Advanced Math",t:"Principal stresses (Mohr's circle)",v:[["Principal stresses","$\\sigma_{1,2}=\\frac{\\sigma_x+\\sigma_y}{2}\\pm\\sqrt{\\left(\\frac{\\sigma_x-\\sigma_y}{2}\\right)^2+\\tau_{xy}^2}$"],["Principal angle","$\\tan2\\theta_p=\\frac{2\\tau_{xy}}{\\sigma_x-\\sigma_y}$"],["Maximum shear","$\\tau_{max}=\\sqrt{\\left(\\frac{\\sigma_x-\\sigma_y}{2}\\right)^2+\\tau_{xy}^2}$"]]}
+];
+function beam(t){
+ const ss=t==="ssu"||t==="ssp",u=t==="ssu"||t==="cu"||t==="fu";
+ let a=`<defs><marker id="ah" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0L10 5L0 10z" style="fill:var(--ac);stroke:none"/></marker></defs><g fill="none" stroke="currentColor" stroke-width="2"><path d="M30 40H270"/>`;
+ a+=ss?`<path d="M30 40l-7 14h14zM270 40l-7 14h14z"/>`:`<path d="M30 22V58${t==="fu"?"M270 22V58":""}"/>`;
+ a+=`</g><g fill="none" stroke-width="2" style="stroke:var(--ac)">`;
+ if(u){a+=`<path d="M40 12H260"/>`;for(let x=40;x<=260;x+=44)a+=`<path d="M${x} 12V37" marker-end="url(#ah)"/>`}
+ else{const x=t==="ssp"?150:268;a+=`<path d="M${x} 6V37" marker-end="url(#ah)"/>`}
+ const m={ssu:"M30 85Q150 145 270 85Z",ssp:"M30 85L150 115L270 85Z",cp:"M30 85V50L270 85Z",cu:"M30 85V50Q180 85 270 85Z",fu:"M30 85V60Q150 135 270 60V85Z"}[t];
+ a+=`</g><path d="M30 85H270" stroke="currentColor" stroke-dasharray="3 3" fill="none"/><path d="${m}" stroke-width="2" style="fill:var(--ac);fill-opacity:.25;stroke:var(--ac)"/><text x="30" y="128" font-size="9" fill="currentColor">Moment diagram (below dashed line = tension at bottom)</text>`;
+ return `<svg viewBox="0 0 300 135" style="width:100%;max-width:420px;display:block;margin:8px auto" role="img" aria-label="Beam loading and moment diagram">${a}</svg>`}
+/* FIGURE BUILDER: formula -> figure -> SVG / DXF / TikZ */
+const BT={
+ssu:{n:"Simply supported, uniform load",u:"w",R:(L,q)=>q*L/2,M:(L,q)=>q*L*L/8,y:(x,L,q,e)=>q*x*(L**3-2*L*x*x+x**3)/(24*e),d:(L,q,e)=>5*q*L**4/(384*e),tx:"\\frac{5wL^4}{384EI}",mx:"\\frac{wL^2}{8}"},
+ssp:{n:"Simply supported, midspan point load",u:"P",R:(L,q)=>q/2,M:(L,q)=>q*L/4,y:(x,L,q,e)=>{x=Math.min(x,L-x);return q*x*(3*L*L-4*x*x)/(48*e)},d:(L,q,e)=>q*L**3/(48*e),tx:"\\frac{PL^3}{48EI}",mx:"\\frac{PL}{4}"},
+cp:{n:"Cantilever, end point load",u:"P",R:(L,q)=>q,M:(L,q)=>q*L,y:(x,L,q,e)=>q*x*x*(3*L-x)/(6*e),d:(L,q,e)=>q*L**3/(3*e),tx:"\\frac{PL^3}{3EI}",mx:"PL"},
+cu:{n:"Cantilever, uniform load",u:"w",R:(L,q)=>q*L,M:(L,q)=>q*L*L/2,y:(x,L,q,e)=>q*x*x*(6*L*L-4*L*x+x*x)/(24*e),d:(L,q,e)=>q*L**4/(8*e),tx:"\\frac{wL^4}{8EI}",mx:"\\frac{wL^2}{2}"},
+fu:{n:"Fixed-fixed, uniform load",u:"w",R:(L,q)=>q*L/2,M:(L,q)=>q*L*L/12,y:(x,L,q,e)=>q*x*x*(L-x)**2/(24*e),d:(L,q,e)=>q*L**4/(384*e),tx:"\\frac{wL^4}{384EI}",mx:"\\frac{wL^2}{12}"}
+};
+function geo(t,L,q,e){
+ const b=BT[t],s=L*.04,N=40,segs=[],pts=[],dm=b.d(L,q,e);
+ const tri=x=>segs.push([x,0,x-s,-1.8*s],[x-s,-1.8*s,x+s,-1.8*s],[x+s,-1.8*s,x,0]);
+ const wall=x=>segs.push([x,-2*s,x,2*s]);
+ if(t[0]==="s"){tri(0);tri(L)}else{wall(0);if(t==="fu")wall(L)}
+ for(let i=0;i<=N;i++){const x=L*i/N;pts.push([x,-b.y(x,L,q,e)/dm*.12*L])}
+ return{b,dm,segs,pts,L};
+}
+function svgOf(g){
+ const k=240/g.L,X=x=>(30+x*k).toFixed(1),Y=y=>(40-y*k).toFixed(1);
+ const sg=g.segs.map(s=>`M${X(s[0])} ${Y(s[1])}L${X(s[2])} ${Y(s[3])}`).join("");
+ const cv="M"+g.pts.map(p=>X(p[0])+" "+Y(p[1])).join("L");
+ return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 110" style="width:100%;max-width:420px;display:block;margin:8px auto"><g fill="none" stroke-width="2"><path d="${sg}" style="stroke:currentColor"/><path d="M30 40H270" stroke-dasharray="3 3" style="stroke:currentColor"/><path d="${cv}" style="stroke:var(--ac,#d9480f)"/></g><text x="30" y="100" font-size="9" fill="currentColor">δmax = ${(g.dm*1000).toFixed(2)} mm (curve exaggerated)</text></svg>`;
+}
+function dxfOf(g){
+ const f=v=>(v*1000).toFixed(1);let o="0\nSECTION\n2\nENTITIES\n";
+ const ln=(l,a,b,c,d)=>{o+=`0\nLINE\n8\n${l}\n10\n${f(a)}\n20\n${f(b)}\n30\n0\n11\n${f(c)}\n21\n${f(d)}\n31\n0\n`};
+ ln("BEAM",0,0,g.L,0);g.segs.forEach(s=>ln("SUPPORT",s[0],s[1],s[2],s[3]));
+ for(let i=1;i<g.pts.length;i++)ln("DEFLECTED",g.pts[i-1][0],g.pts[i-1][1],g.pts[i][0],g.pts[i][1]);
+ return o+"0\nENDSEC\n0\nEOF\n";
+}
+function tikzOf(g){
+ const r=v=>v.toFixed(3);
+ return `\\begin{tikzpicture}\n\\draw[thick] (0,0) -- (${r(g.L)},0);\n`+g.segs.map(s=>`\\draw (${r(s[0])},${r(s[1])}) -- (${r(s[2])},${r(s[3])});\n`).join("")+`\\draw[thick,red] plot[smooth] coordinates {${g.pts.map(p=>`(${r(p[0])},${r(p[1])})`).join(" ")}};\n\\node[below] at (${r(g.L/2)},${r(-.06*g.L)}) {$\\delta_{max}=${(g.dm*1000).toFixed(2)}$ mm};\n\\end{tikzpicture}`;
+}
+const FG={MSTC:["Algebra","Trigonometry","Analytic Geometry","Calculus","Diff. Equations","Numerical Methods","Linear Algebra","Probability & Stats","Advanced Math","Surveying","Transportation"],HPGE:["Hydraulics","Geotechnical"],PSAD:["Beams","NSCP","Concrete","Materials"]},grp=c=>Object.keys(FG).find(g=>FG[g].includes(c))||"Other";
+let fGrp="All",fCat="All",fQ="",fAll=[];
+const fCard=x=>`<div class="card"><div class="row"><b>${esc(x.t)}</b><span class="tag">${esc(x.c)}</span></div>${x.r?`<div class="muted">${esc(x.r)}</div>`:""}${x.f?beam(x.f):""}${imgTag(x)}${x.v&&x.v.length?`<div style="overflow-x:auto"><table>${x.v.map(r=>`<tr><td>${esc(r[0])}</td><td>${esc(r[1])}</td></tr>`).join("")}</table></div>`:""}${x.n?`<p class="muted">${esc(x.n)}</p>`:""}${x.my!==undefined?`<button data-del="${x.my}">Delete</button>`:""}</div>`;
+function drawList(){
+ const q=fQ.toLowerCase();
+ const l=fAll.filter(x=>(fGrp==="All"||grp(x.c)===fGrp)&&(fCat==="All"||x.c===fCat)&&(!q||[x.t,x.c,x.r,x.n,(x.v||[]).join(" ")].join(" ").toLowerCase().includes(q)));
+ $("#fList").innerHTML=l.map(fCard).join("")||`<p class="muted">Nothing found.</p>`;
+ $("#fList").querySelectorAll("[data-del]").forEach(b=>b.onclick=()=>{if(!confirm("Delete this entry?"))return;const m=LS.get("figs",[]);m.splice(+b.dataset.del,1);LS.set("figs",m);renderFigs()});
+ typeset($("#figs"));
+}
+function renderFigs(){
+ const ORD=Object.values(FG).flat(),rk=c=>{const i=ORD.indexOf(c);return i<0?99:i};
+ fAll=FIGS.concat(LS.get("figs",[]).map((x,i)=>({...x,my:i}))).sort((a,b)=>rk(a.c)-rk(b.c));
+ const cats=[...new Set(fAll.map(x=>x.c))];
+ $("#figs").innerHTML=`<details class="card"><summary><b>Figure builder: formula to figure, export to CAD</b></summary>
+ <label>Beam case</label><select id="gT">${Object.keys(BT).map(k=>`<option value="${k}">${BT[k].n}</option>`).join("")}</select>
+ <label>Span L (m)</label><input id="gL" type="number" value="6" step="any">
+ <label id="gQl">Load</label><input id="gQ" type="number" value="10" step="any">
+ <label>E (GPa)</label><input id="gE" type="number" value="200" step="any">
+ <label>I (×10⁶ mm⁴)</label><input id="gI" type="number" value="500" step="any">
+ <button class="p" id="gGo">Build figure</button><div id="gOut"></div></details>
+ <input id="fS" placeholder="Search formulas or NSCP sections" value="${esc(fQ)}">
+ <div class="chips">${["All","MSTC","HPGE","PSAD",...(cats.some(c=>grp(c)==="Other")?["Other"]:[])].map(c=>`<button class="chip ${c===fGrp?"on":""}" data-g="${c}">${c}</button>`).join("")}</div>
+ <div class="chips">${["All",...cats.filter(c=>fGrp==="All"||grp(c)===fGrp)].map(c=>`<button class="chip ${c===fCat?"on":""}" data-c="${esc(c)}">${esc(c)}</button>`).join("")}</div>
+ <div id="fList"></div>
+ <details class="card"><summary><b>Add your own figure or value</b></summary>
+ <label>Category</label><input id="fC" list="fCl" placeholder="e.g. NSCP, Beams, My notes"><datalist id="fCl">${cats.map(c=>`<option value="${esc(c)}">`).join("")}</datalist>
+ <label>Title</label><input id="fT">
+ <label>Code reference (optional)</label><input id="fR" placeholder="e.g. NSCP 2015 Table 205-1">
+ <label>Values, one per line as label = value</label><textarea id="fV" rows="4"></textarea>
+ <label>Notes (optional)</label><textarea id="fN" rows="2"></textarea>
+ <label>Figure image (optional)</label><input type="file" id="fI" accept="image/*">
+ <button class="p" id="fAdd">Save</button></details>
+ `;
+ $("#fS").oninput=e=>{fQ=e.target.value;drawList()};
+ $("#gT").onchange=()=>{$("#gQl").textContent="Load "+(BT[$("#gT").value].u==="w"?"w (kN/m)":"P (kN)")};$("#gT").onchange();
+ $("#gGo").onclick=()=>{
+  const t=$("#gT").value,L=+$("#gL").value,q=+$("#gQ").value,e=$("#gE").value*$("#gI").value;
+  if(!(L>0&&q>0&&e>0))return alert("Enter positive values.");
+  const g=geo(t,L,q,e),b=g.b,mm=+(g.dm*1000).toFixed(2),M=+b.M(L,q).toFixed(2),R=+b.R(L,q).toFixed(2);
+  const rows=[["Max deflection",`$\\delta_{max}=${b.tx}=${mm}$ mm`],["Max moment",`$M=${b.mx}=${M}$ kN·m`],["Reaction",`$R=${R}$ kN`],["Stiffness",`$EI=${e.toLocaleString()}$ kN·m²`]];
+  const out=[["SVG (paste into a .svg file)",svgOf(g)],["DXF for CAD (paste into a .dxf file, units mm)",dxfOf(g)],["TikZ for LaTeX (needs the tikz package)",tikzOf(g)]];
+  $("#gOut").innerHTML=svgOf(g)+`<table>${rows.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td></tr>`).join("")}</table>`+out.map((o,i)=>`<label>${o[0]}</label><textarea readonly rows="4" id="gx${i}">${esc(o[1])}</textarea><button data-cp="${i}">Copy</button>`).join("");
+  $("#gOut").querySelectorAll("[data-cp]").forEach(c=>c.onclick=()=>{const ta=$("#gx"+c.dataset.cp);ta.select();try{navigator.clipboard.writeText(ta.value)}catch(x){}try{document.execCommand("copy")}catch(x){}c.textContent="Copied"});
+  typeset($("#gOut"));
+ };
+ $("#figs").querySelectorAll("[data-g]").forEach(b=>b.onclick=()=>{fGrp=b.dataset.g;fCat="All";renderFigs()});
+ $("#figs").querySelectorAll("[data-c]").forEach(b=>b.onclick=()=>{fCat=b.dataset.c;renderFigs()});
+ $("#fAdd").onclick=async()=>{
+  const t=$("#fT").value.trim();if(!t)return alert("Add a title.");
+  const v=$("#fV").value.split("\n").map(l=>l.trim()).filter(Boolean).map(l=>{const i=l.indexOf("=");return i<0?[l,""]:[l.slice(0,i).trim(),l.slice(i+1).trim()]});
+  const m=LS.get("figs",[]);
+  m.push({c:$("#fC").value.trim()||"My notes",t,r:$("#fR").value.trim(),v,n:$("#fN").value.trim(),img:$("#fI").files[0]?await shrink($("#fI").files[0]):""});
+  LS.set("figs",m);renderFigs()};
+ drawList();
+}
+
+/* BEAM SOLVER */
+let SL=[{t:"w",m:10,a:0,b:6}];
+const mx=a=>{let b=0,j=0;a.forEach((v,i)=>{if(Math.abs(v)>Math.abs(b)){b=v;j=i}});return[b,j]};
+const nf=(v,n=4)=>+v.toPrecision(n);
+function solveBeam(sup,L,EI,loads){
+ const N=400,h=L/N,xs=[],V=[],M=[],ct=sup==="ct";
+ let tot=0,mom=0;
+ loads.forEach(l=>{if(l.t==="P"){tot+=l.m;mom+=l.m*l.a}else{const w=l.m*(l.b-l.a);tot+=w;mom+=w*(l.a+l.b)/2}});
+ const RB=ct?0:mom/L,RA=tot-RB,M0=ct?mom:0;
+ for(let i=0;i<=N;i++){
+  const x=i*h;let v=RA,m=RA*x-M0;
+  loads.forEach(l=>{
+   if(l.t==="P"){if(x>l.a){v-=l.m;m-=l.m*(x-l.a)}}
+   else if(x>l.a){const e=Math.min(x,l.b);v-=l.m*(e-l.a);m-=l.m*(e-l.a)*(x-(l.a+e)/2)}
+  });
+  xs.push(x);V.push(v);M.push(m);
+ }
+ const k=M.map(m=>m/EI),s=[0],d=[0];
+ for(let i=1;i<=N;i++){s.push(s[i-1]+h*(k[i]+k[i-1])/2);d.push(d[i-1]+h*(s[i]+s[i-1])/2)}
+ const t0=ct?0:-d[N]/L;
+ return{xs,V,M,k,RA,RB,M0,th:s.map(v=>(v+t0)*180/Math.PI),dl:d.map((v,i)=>-(v+t0*xs[i])*1000)};
+}
+function plot(xs,a,title,unit,f){
+ const [b,j]=mx(a),s=b?36/Math.abs(b):0,Lx=xs[xs.length-1];
+ const p=xs.map((x,i)=>(20+x/Lx*260).toFixed(1)+" "+(45-f*a[i]*s).toFixed(1)).join("L");
+ return `<div class="card"><div class="row"><b>${title}</b><span class="muted">max ${nf(b)} ${unit} at x = ${xs[j].toFixed(2)} m</span></div><svg viewBox="0 0 300 90" style="width:100%;display:block"><path d="M20 45H280" style="stroke:currentColor;stroke-dasharray:3 3;fill:none"/><path d="M20 45L${p}L280 45Z" style="fill:var(--ac);fill-opacity:.2;stroke:var(--ac);stroke-width:2"/></svg></div>`;
+}
+function schem(sup,L,loads){
+ const X=x=>+(20+x/L*260).toFixed(1);
+ const ar=(x,up)=>up?`M${x} 38V8M${x-4} 14L${x} 8L${x+4} 14`:`M${x} 8V38M${x-4} 32L${x} 38L${x+4} 32`;
+ let q="";
+ loads.forEach(l=>{const up=l.m<0;if(l.t==="P")q+=ar(X(l.a),up);else{const x1=X(l.a),x2=X(l.b);q+=`M${x1} 8H${x2}`;for(let i=0;i<=6;i++)q+=ar(+(x1+(x2-x1)*i/6).toFixed(1),up)}});
+ const sp=sup==="ss"?"M20 40l-7 14h14zM280 40l-7 14h14z":"M20 22V58";
+ return `<svg viewBox="0 0 300 66" style="width:100%;display:block"><path d="M20 40H280${sp}" style="stroke:currentColor;stroke-width:3;fill:none"/><path d="${q}" style="stroke:var(--ac);stroke-width:2;fill:none"/></svg>`;
+}
+function sList(){
+ $("#sList").innerHTML=SL.length?SL.map((l,i)=>`<div class="row muted"><span>${l.t==="P"?`P = ${l.m} kN at x = ${l.a} m`:`w = ${l.m} kN/m from x = ${l.a} to ${l.b} m`}</span><button data-r="${i}">Remove</button></div>`).join(""):`<p class="muted">No loads yet.</p>`;
+ $("#sList").querySelectorAll("[data-r]").forEach(b=>b.onclick=()=>{SL.splice(+b.dataset.r,1);sList()});
+}
+function renderSolver(){
+ $("#solver").innerHTML=`<div class="card"><label>Support</label><select id="sSup"><option value="ss">Simply supported</option><option value="ct">Cantilever (fixed at left end)</option></select>
+ <label>Span L (m)</label><input id="sL" type="number" value="6" step="any">
+ <label>E (GPa)</label><input id="sE" type="number" value="200" step="any">
+ <label>I (×10⁶ mm⁴)</label><input id="sI" type="number" value="500" step="any"></div>
+ <div class="card"><b>Loads</b> <span class="muted">(downward is positive; use a negative value for upward)</span><div id="sList"></div>
+ <label>Type</label><select id="lT"><option value="P">Point load P (kN)</option><option value="w">Uniform load w (kN/m)</option></select>
+ <label>Magnitude</label><input id="lM" type="number" value="10" step="any">
+ <label>Position a (m)</label><input id="lA" type="number" value="0" step="any">
+ <div id="lBw"><label>Ends at b (m)</label><input id="lB" type="number" value="6" step="any"></div>
+ <button id="lAdd">Add load</button></div>
+ <button class="p" id="sGo">Solve</button><div id="sOut"></div>`;
+ sList();
+ $("#lT").onchange=()=>$("#lBw").classList.toggle("hide",$("#lT").value==="P");$("#lT").value="w";$("#lT").onchange();
+ $("#lAdd").onclick=()=>{
+  const t=$("#lT").value,m=+$("#lM").value,a=+$("#lA").value,b=+$("#lB").value,L=+$("#sL").value;
+  if(!m||!(a>=0&&a<=L))return alert("Check the magnitude and position.");
+  if(t==="w"&&!(b>a&&b<=L))return alert("For a uniform load, b must be greater than a and not beyond L.");
+  SL.push({t,m,a,b:t==="w"?b:a});sList()};
+ $("#sGo").onclick=()=>{
+  const L=+$("#sL").value,EI=$("#sE").value*$("#sI").value,sup=$("#sSup").value;
+  if(!(L>0&&EI>0))return alert("Enter positive L, E and I.");
+  if(!SL.length)return alert("Add at least one load.");
+  if(SL.some(l=>l.a>L||l.b>L))return alert("A load lies beyond the span. Remove it or increase L.");
+  const r=solveBeam(sup,L,EI,SL),at=(a,u)=>{const[b,j]=mx(a);return `${nf(b)} ${u} at x = ${r.xs[j].toFixed(2)} m`};
+  const km=mx(r.k)[0],dm=Math.abs(mx(r.dl)[0]),R=(a,b)=>`<tr><td>${a}</td><td>${b}</td></tr>`;
+  $("#sOut").innerHTML=`<div class="card">${schem(sup,L,SL)}<div style="overflow-x:auto"><table>`+
+   R("Reactions",sup==="ss"?`R<sub>A</sub> = ${nf(r.RA)} kN, R<sub>B</sub> = ${nf(r.RB)} kN`:`R = ${nf(r.RA)} kN, M<sub>fixed</sub> = ${nf(r.M0)} kN·m`)+
+   R("Max shear",at(r.V,"kN"))+R("Max moment",at(r.M,"kN·m"))+R("Max deflection",at(r.dl,"mm"))+R("Span / deflection",dm?"L/"+nf(L*1000/dm,3):"none")+R("Max slope",at(r.th,"°"))+R("Max curvature",`${nf(km)} 1/m`+(km?` (radius ${nf(Math.abs(1/km))} m)`:""))+
+   `</table></div></div>`+plot(r.xs,r.V,"Shear V","kN",1)+plot(r.xs,r.M,"Bending moment M","kN·m",-1)+plot(r.xs,r.th,"Slope θ (degrees)","°",1)+plot(r.xs,r.dl,"Deflection δ (downward)","mm",-1)+plot(r.xs,r.k,"Curvature κ = M/EI","1/m",-1);
+ };
+}
+
+/* QUIZ HUB */
+let qN=5,qT=0;
+const GN={MSTC:"Mathematics, Surveying and Transportation",HPGE:"Hydraulics and Geotechnical",PSAD:"Structural Analysis and Design"};
+quizSetup=function(){
+ clearInterval(timer);
+ const b=bankAll(),h=LS.get("hist",[]);
+ const card=(name,n,sub)=>{const bs=h.filter(x=>x.s===sub),best=bs.length?` · best ${Math.max(...bs.map(x=>Math.round(x.c/x.n*100)))}%`:"";return `<div class="card row"><div><b>${name}</b><br><span class="muted">${n} questions${best}</span></div><button class="p" data-s="${sub}" ${n?"":"disabled"}>Start</button></div>`};
+ $("#quiz").innerHTML=`<div class="card"><div class="row"><label>Questions per quiz</label><input id="qN" type="number" min="1" value="${qN}" style="width:90px"></div><div class="row"><label>Time limit in minutes (0 = none)</label><input id="qT" type="number" min="0" value="${qT}" style="width:90px"></div></div>`+
+  Object.keys(QG).map(g=>`<h3 style="margin:18px 0 2px">${g}</h3><p class="muted" style="margin:0">${GN[g]}</p>`+QG[g].map(s=>card(s,b.filter(x=>x.s===s).length,s)).join("")).join("")+
+  `<h3 style="margin:18px 0 2px">Mixed</h3>`+card("All subjects",b.length,"All")+
+  (h.length?`<div class="card"><b>Recent scores</b>${h.slice(-5).reverse().map(x=>`<div class="row muted"><span>${esc(x.s)} · ${esc(x.d)}</span><span>${x.c}/${x.n}</span></div>`).join("")}</div>`:"");
+ $("#quiz").querySelectorAll("[data-s]").forEach(bt=>bt.onclick=()=>{
+  const sub=bt.dataset.s,mins=+$("#qT").value||0;qN=+$("#qN").value||5;qT=mins;
+  const pool=b.filter(x=>sub==="All"||x.s===sub).map(x=>({x,r:Math.random()})).sort((a,c)=>a.r-c.r).map(o=>o.x).slice(0,Math.max(1,qN));
+  Q={sub,list:pool,i:0,ans:[],left:mins*60,mins};
+  if(mins){timer=setInterval(()=>{Q.left--;const t=$("#tm");if(t)t.textContent=fmt(Q.left);if(Q.left<=0)finish()},1000)}
+  ask()});
+};
+
+openDB().then(()=>{renderMats();renderBank();renderFigs();renderSolver();show("quiz")});
+</script>
+</body>
+</html>
